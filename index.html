@@ -45,7 +45,7 @@
             line-height: 75px;
             font-weight: 700;
             letter-spacing: -0.025em;
-            color: #202020;
+            color: #444444;
         }
         .hero .sub {
             margin: 14px 0 0;
@@ -55,6 +55,49 @@
             color: #7a7a7a;
             letter-spacing: -0.005em;
         }
+
+        /* ---------- «клик» → switch morph ---------- */
+        .click-morph {
+            position: relative;
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .morph-word {
+            display: inline-block;
+            transition: opacity .45s ease, transform .45s ease;
+        }
+        .morph-switch {
+            position: absolute;
+            left: 50%;
+            top: 54%;
+            width: 1.6em;
+            height: .75em;
+            border-radius: 999px;
+            background: #444444;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(.4);
+            transition: opacity .45s ease, transform .45s ease, background-color .35s ease;
+        }
+        .morph-knob {
+            position: absolute;
+            top: .085em;
+            left: .07em;
+            width: .67em;
+            height: .58em;
+            border-radius: 999px;
+            background: #fff;
+            box-shadow: 0 .03em .08em rgba(0, 0, 0, .25);
+            transition: transform .32s cubic-bezier(.4, 0, .2, 1);
+        }
+        .click-morph.as-switch .morph-word {
+            opacity: 0;
+            transform: scale(.35);
+        }
+        .click-morph.as-switch .morph-switch {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .click-morph.on .morph-knob { transform: translateX(.79em); }
 
         .buttons { display: flex; justify-content: center; gap: 14px; }
         .hero .buttons { margin-top: 55px; }
@@ -73,7 +116,7 @@
         }
         .btn:hover { transform: scale(1.03); }
         .btn img { width: 20px; height: 20px; }
-        .btn-download { width: 200px; background: #202020; color: #fff; }
+        .btn-download { width: 200px; background: #444444; color: #fff; }
         .btn-download img { margin-top: -2px; }
 
         /* Hover: black fill changes to the app icon color */
@@ -264,7 +307,7 @@
     </nav>
 
     <header class="hero">
-        <h1>Примени настройки<br>в один клик</h1>
+        <h1>Примени настройки<br>в один <span class="click-morph" id="clickMorph"><span class="morph-word">клик</span><span class="morph-switch" aria-hidden="true"><span class="morph-knob"></span></span></span></h1>
         <p class="sub">Множество скриптов в одном файле</p>
 
         <div class="buttons">
@@ -362,6 +405,43 @@
             window.addEventListener('resize', fit);
             window.addEventListener('load', fit);
             fit();
+        })();
+
+        // «клик» ↔ switch morph: word turns into a toggle that cycles
+        // green → purple → light blue → blue, then turns back into the word.
+        (function () {
+            var wrap = document.getElementById('clickMorph');
+            if (!wrap) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            var sw = wrap.querySelector('.morph-switch');
+            var GRAY = '#444444';
+            var COLORS = ['#34c759', '#af52de', '#32ade6', '#0255fc'];
+            var MORPH_MS = 500, HOLD_ON = 1300, HOLD_OFF = 420, WORD_PAUSE = 1800;
+
+            function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+            async function cycle() {
+                wrap.classList.add('as-switch');
+                await wait(MORPH_MS + 750);
+
+                for (var i = 0; i < COLORS.length; i++) {
+                    sw.style.background = COLORS[i];
+                    wrap.classList.add('on');
+                    await wait(HOLD_ON);
+                    wrap.classList.remove('on');
+                    sw.style.background = GRAY;
+                    if (i < COLORS.length - 1) await wait(HOLD_OFF);
+                }
+
+                await wait(MORPH_MS);
+                wrap.classList.remove('as-switch');
+                await wait(MORPH_MS + WORD_PAUSE);
+            }
+
+            (async function loop() {
+                for (;;) { await cycle(); }
+            })();
         })();
     </script>
 
