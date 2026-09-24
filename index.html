@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCU</title>
     <meta name="description" content="Бесплатная утилита для настройки и обслуживания Windows. Множество скриптов в одном файле.">
-    <link rel="icon" type="image/png" href="static/SCU/app-icon.png">
-    <link rel="apple-touch-icon" href="static/SCU/app-icon.png">
+    <link rel="icon" type="image/png" href="static/compositor/app-icon.png">
+    <link rel="apple-touch-icon" href="static/compositor/app-icon.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -143,7 +143,20 @@
         .gallery-track { position: absolute; inset: 0; display: flex; flex-direction: column; }
         .gallery-track img { flex: 1 1 0; min-height: 0; width: 100%; object-fit: cover; }
         .gallery-track .dup { display: none; }
-        .gallery.three .extra { display: none; }
+
+        .cards {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-top: 44px;
+            max-width: 433px;
+        }
+        .cards img {
+            border-radius: 12px;
+            box-shadow: 0 14px 34px rgba(0, 0, 0, .18);
+        }
+        .cards img:first-child { width: 246px; }
+        .cards img:last-child { width: 141px; }
 
         .info {
             width: 50%;
@@ -260,7 +273,6 @@
             .purpose { flex-direction: column; margin-top: 35px; }
 
             .gallery { width: 100%; pointer-events: none; touch-action: pan-y; }
-            .gallery.three .extra { display: block; }
             .gallery-track {
                 position: static;
                 flex-direction: row;
@@ -282,6 +294,9 @@
             .info h2 { margin-top: 12px; font-size: 21px; line-height: 26px; }
             .copy { max-width: none; margin-top: 21px; }
             .copy p { font-size: 14px; line-height: 20px; margin-bottom: 20px; }
+            .cards { margin-top: 36px; gap: 12px; }
+            .cards img:first-child { width: 208px; }
+            .cards img:last-child { width: 119px; }
             .features { margin-top: 40px; max-width: none; }
             .features li { height: 44px; font-size: 14px; padding-left: 8px; }
 
@@ -311,26 +326,24 @@
         <p class="sub">Множество скриптов в одном файле</p>
 
         <div class="buttons">
-            <a class="btn btn-download" href="https://drive.google.com/file/d/1bZUY4s6JqS0KpGveRrbbqf7swBbuv7cM/view?usp=sharing"><img src="static/SCU/windows-logo.svg" alt="">Скачать</a>
-            <a class="btn btn-source" href="https://drive.google.com/drive/folders/1Usa65sfPznK6GNPHZIR99-OaJWV7etk1?usp=sharing" target="_blank" rel="noopener"><img src="static/SCU/gdrive-logo.svg" alt="">Исходный код</a>
+            <a class="btn btn-download" href="https://drive.google.com/file/d/1bZUY4s6JqS0KpGveRrbbqf7swBbuv7cM/view?usp=sharing"><img src="static/compositor/windows-logo.svg" alt="">Скачать</a>
+            <a class="btn btn-source" href="https://drive.google.com/drive/folders/1Usa65sfPznK6GNPHZIR99-OaJWV7etk1?usp=sharing" target="_blank" rel="noopener"><img src="static/compositor/gdrive-logo.svg" alt="">Исходный код</a>
         </div>
 
         <div class="hero-image">
-            <img src="static/SCU/hero.png" alt="Используйте SCU на Windows">
+            <img src="static/compositor/hero.png" alt="Интерфейс приложения SCU">
         </div>
     </header>
 
     <section class="purpose">
         <div class="gallery" aria-hidden="true">
             <div class="gallery-track">
-                <img src="static/scu/screen-main.png" alt="">
-                <img src="static/scu/screen-install.png" alt="">
-                <img src="static/scu/screen-cleanup.png" alt="">
-                <img class="extra" src="static/scu/screen-power.png" alt="">
-                <img class="dup" src="static/scu/screen-main.png" alt="">
-                <img class="dup" src="static/scu/screen-install.png" alt="">
-                <img class="dup" src="static/scu/screen-cleanup.png" alt="">
-                <img class="dup" src="static/scu/screen-power.png" alt="">
+                <img src="static/scuapp/screen-install.png" alt="">
+                <img src="static/scuapp/screen-cleanup.png" alt="">
+                <img src="static/scuapp/screen-power.png" alt="">
+                <img class="dup" src="static/scuapp/screen-install.png" alt="">
+                <img class="dup" src="static/scuapp/screen-cleanup.png" alt="">
+                <img class="dup" src="static/scuapp/screen-power.png" alt="">
             </div>
         </div>
 
@@ -340,7 +353,12 @@
             <div class="copy">
                 <p>Стандартные средства Windows разбросаны по десяткам окон и панелей, а большинство сторонних «оптимизаторов» либо перегружены рекламой и ненужным функционалом, либо выглядят так, будто их не обновляли с Windows 7. Мне нужен был один современный инструмент, который закрывает все повседневные задачи по настройке и обслуживанию системы — без лишнего шума и с привычным уровнем удобства.</p>
                 <p>Так появился SCU. Это полнофункциональная утилита для Windows с чистым интерфейсом, поддержкой тёмной и светлой темы, русским и английским языками. В одном окне собраны очистка диска и временных файлов, удаление мусорных приложений, управление службами и автозагрузкой, тонкая настройка сети, питания, приватности, интерфейса и даже активация Windows и Office. Перед любыми изменениями создаются резервные копии и точки восстановления, а дашборд подсказывает, что действительно стоит поправить.</p>
-                <p>Приложение бесплатное, работает на современном .NET и открыто для доработок. Вы можете взять исходный код, убрать ненужные разделы, добавить свои сценарии или просто пользоваться готовым инструментом, который делает систему быстрее, чище и удобнее без лишних телодвижений.</p>
+                <p>Приложение бесплатное, работает на современном .NET и открыто для доработок. Вы можете взять исходный код, убрать ненужные разделы, добавить свои сценарии или просто пользоваться готовым инструментом, который делает систему быстрее, чище и экономит ваше время.</p>
+            </div>
+
+            <div class="cards" aria-hidden="true">
+                <img src="static/scuapp/card-notification.png" alt="">
+                <img src="static/scuapp/card-settings.png" alt="">
             </div>
 
             <ul class="features">
@@ -369,12 +387,12 @@
 
     <footer class="footer">
         <div class="footer-brand">
-            <img src="static/SCU/app-icon.png" alt="иконка SCU">
+            <img src="static/compositor/app-icon.png" alt="иконка SCU">
             <span>SCU</span>
         </div>
         <div class="buttons">
-            <a class="btn btn-download" href="https://drive.google.com/file/d/1bZUY4s6JqS0KpGveRrbbqf7swBbuv7cM/view?usp=sharing"><img src="static/SCU/windows-logo.svg" alt="">Скачать</a>
-            <a class="btn btn-source" href="https://drive.google.com/drive/folders/1Usa65sfPznK6GNPHZIR99-OaJWV7etk1?usp=sharing" target="_blank" rel="noopener"><img src="static/SCU/gdrive-logo.svg" alt="">Исходный код</a>
+            <a class="btn btn-download" href="https://drive.google.com/file/d/1bZUY4s6JqS0KpGveRrbbqf7swBbuv7cM/view?usp=sharing"><img src="static/compositor/windows-logo.svg" alt="">Скачать</a>
+            <a class="btn btn-source" href="https://drive.google.com/drive/folders/1Usa65sfPznK6GNPHZIR99-OaJWV7etk1?usp=sharing" target="_blank" rel="noopener"><img src="static/compositor/gdrive-logo.svg" alt="">Исходный код</a>
         </div>
     </footer>
 
@@ -389,23 +407,6 @@
                 gtag('event', name, { transport_type: 'beacon' });
             });
         });
-
-        // Desktop: use 3 or 4 example images, whichever needs less cropping to fill the panel height.
-        (function () {
-            var gallery = document.querySelector('.gallery');
-            var ratio = 1920 / 1032;
-            function fit() {
-                var w = gallery.offsetWidth, h = gallery.offsetHeight;
-                if (!w || !h) return;
-                var natural = w / ratio;
-                var three = Math.abs(Math.log((h / 3) / natural));
-                var four = Math.abs(Math.log((h / 4) / natural));
-                gallery.classList.toggle('three', three <= four);
-            }
-            window.addEventListener('resize', fit);
-            window.addEventListener('load', fit);
-            fit();
-        })();
 
         // «клик» ↔ switch morph: word turns into a toggle that cycles
         // green → purple → light blue → blue, then turns back into the word.
