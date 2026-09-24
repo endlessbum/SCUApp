@@ -13,10 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-10476
-
         *, *::before, *::after { box-sizing: border-box; }
-        html, body { margin: 0; padding: 0; background: #fff; color: #000; }
+        html, body { margin: 0; padding: 0; background: #fff; color: #000; overflow-x: hidden; overflow-x: clip; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -272,7 +270,7 @@
 
             .purpose { flex-direction: column; margin-top: 35px; }
 
-            .gallery { width: 100%; pointer-events: none; touch-action: pan-y; }
+            .gallery { width: 100%; pointer-events: none; touch-action: pan-y; container-type: inline-size; }
             .gallery-track {
                 position: static;
                 flex-direction: row;
@@ -284,8 +282,8 @@
             .gallery-track .dup {
                 display: block;
                 flex: none;
-                width: 100vw;
-                height: calc(100vw * 0.6617);
+                width: 100cqw;
+                height: calc(100cqw * 0.6617);
                 object-fit: cover;
             }
 
@@ -295,8 +293,8 @@
             .copy { max-width: none; margin-top: 21px; }
             .copy p { font-size: 14px; line-height: 20px; margin-bottom: 20px; }
             .cards { margin-top: 36px; gap: 12px; }
-            .cards img:first-child { width: 208px; }
-            .cards img:last-child { width: 119px; }
+            .cards img:first-child { width: 62%; }
+            .cards img:last-child { width: calc(38% - 12px); }
             .features { margin-top: 40px; max-width: none; }
             .features li { height: 44px; font-size: 14px; padding-left: 8px; }
 
