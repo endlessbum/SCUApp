@@ -33,7 +33,7 @@ async function markUser(prefix, hash) {
     } catch (e) {
         // маркера нет — создаём; повторная запись того же пути идемпотентна
     }
-    await put(path, String(Date.now()), { access: 'public', addRandomSuffix: false });
+    await put(path, String(Date.now()), { access: 'private', addRandomSuffix: false });
 }
 
 async function countPrefix(prefix) {
