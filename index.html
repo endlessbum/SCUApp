@@ -27,7 +27,7 @@
         /* ---------- NAV ---------- */
         .nav {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
             padding: 25px 46px 0;
             font-size: 16px;
@@ -247,6 +247,121 @@
             border-top: 1px dotted #eeeeee;
         }
 
+        /* ---------- ВЕРСИИ (выдвижные панели) ---------- */
+        :root { --panel-w: 320px; }
+
+        .versions-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0;
+            border: 0;
+            background: none;
+            font: inherit;
+            font-size: 16px;
+            line-height: 20px;
+            color: #444444;
+            cursor: pointer;
+            transition: color .15s ease;
+        }
+        .versions-toggle:hover { color: #0255fc; }
+
+        .versions-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .28);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s ease;
+            z-index: 50;
+        }
+        .versions-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .side-panel {
+            position: fixed;
+            top: 0;
+            height: 100%;
+            background: #fff;
+            overflow-y: auto;
+            transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+        }
+        .side-panel.open { transform: translateX(0); }
+
+        .versions-panel {
+            left: 0;
+            width: var(--panel-w);
+            padding: 30px 26px;
+            box-shadow: 12px 0 40px rgba(0, 0, 0, .12);
+            transform: translateX(-103%);
+            z-index: 60;
+        }
+        .changelog-panel {
+            left: var(--panel-w);
+            width: min(420px, calc(100vw - var(--panel-w)));
+            padding: 30px 28px;
+            box-shadow: 12px 0 40px rgba(0, 0, 0, .12);
+            transform: translateX(-104%);
+            z-index: 55;
+        }
+
+        .panel-head { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+        .panel-head .panel-titles { flex: 1; min-width: 0; }
+        .panel-title { margin: 0; font-size: 18px; line-height: 23px; font-weight: 600; letter-spacing: -0.01em; color: #444444; }
+        .panel-sub { margin: 3px 0 0; font-size: 12px; line-height: 16px; color: #8a8a8a; }
+        .panel-back {
+            flex: none;
+            border: 0;
+            background: none;
+            font-size: 20px;
+            line-height: 1;
+            color: #444444;
+            cursor: pointer;
+            padding: 2px 6px 2px 0;
+            transition: color .15s ease;
+        }
+        .panel-back:hover { color: #0255fc; }
+        .panel-close {
+            flex: none;
+            border: 0;
+            background: none;
+            font-size: 26px;
+            line-height: 1;
+            color: #b5b5b5;
+            cursor: pointer;
+            padding: 0 2px 4px 6px;
+            transition: color .15s ease;
+        }
+        .panel-close:hover { color: #444444; }
+
+        .version-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+            text-align: left;
+            padding: 14px 12px;
+            border: 0;
+            border-bottom: 1px solid #e2e2e2;
+            background: none;
+            font: inherit;
+            cursor: pointer;
+            transition: background-color .15s ease;
+        }
+        .version-item:hover { background: #f5f5f5; }
+        .version-item .version-num { font-size: 15px; line-height: 20px; font-weight: 600; color: #444444; }
+        .version-item .version-date { font-size: 12px; line-height: 16px; color: #8a8a8a; }
+
+        .changelog-body h3 { margin: 24px 0 8px; font-size: 14px; line-height: 19px; font-weight: 700; color: #444444; }
+        .changelog-body h3:first-child { margin-top: 0; }
+        .changelog-body ul { margin: 0; padding-left: 18px; }
+        .changelog-body li { margin: 0 0 8px; font-size: 13px; line-height: 19px; color: #7a7a7a; }
+        .changelog-body code {
+            font-size: 12px;
+            background: #f2f2f2;
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
         /* ---------- TABLET ---------- */
         @media (max-width: 1100px) {
             .hero h1 { font-size: 60px; line-height: 64px; }
@@ -323,6 +438,10 @@
             .footer-brand img { width: 81px; height: 81px; }
             .footer-brand span { font-size: 30px; line-height: 36px; }
             .footer .buttons { margin-top: 50px; }
+
+            :root { --panel-w: 86vw; }
+            .nav { align-items: flex-start; }
+            .changelog-panel { left: 0; width: 100%; z-index: 70; }
         }
 
         @keyframes carousel {
@@ -336,6 +455,7 @@
 
 
     <nav class="nav">
+        <button class="versions-toggle" id="versionsToggle" aria-expanded="false" aria-controls="versionsPanel">Версии <span aria-hidden="true">→</span></button>
         <div class="nav-meta">
             <span class="nav-date">Последнее обновление: 25 сентября 2026</span>
             <span class="nav-stat" id="statVisits">Посещений: —</span>
@@ -426,7 +546,117 @@
         <a href="https://finance.ozon.ru/apps/sbp/ozonbankpay/01a0dd12-3984-7158-aed9-fe1233abfb55" target="_blank" rel="noopener">Поддержи проект (ссылка)</a>
     </div>
 
+    <div class="versions-overlay" id="versionsOverlay"></div>
+
+    <aside class="side-panel versions-panel" id="versionsPanel" aria-hidden="true">
+        <div class="panel-head">
+            <div class="panel-titles">
+                <p class="panel-title">Версии</p>
+            </div>
+            <button class="panel-close" id="versionsClose" aria-label="Закрыть">×</button>
+        </div>
+        <button class="version-item" type="button">
+            <span class="version-num">Версия 3.1.9</span>
+            <span class="version-date">Релиз 26.09.26</span>
+        </button>
+    </aside>
+
+    <aside class="side-panel changelog-panel" id="changelogPanel" aria-hidden="true">
+        <div class="panel-head">
+            <button class="panel-back" id="changelogBack" aria-label="Назад к списку версий">←</button>
+            <div class="panel-titles">
+                <p class="panel-title">Версия 3.1.9</p>
+                <p class="panel-sub">Релиз 26.09.26</p>
+            </div>
+            <button class="panel-close" id="changelogClose" aria-label="Закрыть">×</button>
+        </div>
+        <div class="changelog-body">
+            <h3>Безопасность сканера</h3>
+            <ul>
+                <li>Пересмотрен порядок анализа: lookup по подписанной базе IOC выполняется <strong>всегда до</strong> локального кэша — кэш больше не может скрыть известный malware.</li>
+                <li>Архивы (ZIP, включая вложенные) не кэшируются как «чистые»: содержимое сканируется при каждой встрече контейнера.</li>
+                <li>Кэш вердиктов версионируется по движку, версии базы и профилю сканирования (scripts/archives/persistence/processes/maxFileSize/эвристики) — смена любого параметра полностью сбрасывает кэш; повреждённые записи кэша игнорируются.</li>
+                <li>Persistence-цель-архив проходит полный archive-скан, вердикт содержимого учитывается в детекте автозапуска.</li>
+                <li>Добавлены тесты отмены и повреждённой базы: сканер корректно прерывается и не падает на мусорных данных.</li>
+            </ul>
+            <h3>База и обновления</h3>
+            <ul>
+                <li>Строгая валидация пакета базы: каждая строка <code>hashes.txt</code> проверяется (64 hex, вердикт, имя, UTF-8, без дублей); одна испорченная строка отклоняет всю базу.</li>
+                <li>Загрузка обновлений без автопереходов: redirect'ы обрабатываются вручную — только HTTPS, тот же хост, без понижения схемы, максимум 3 перехода.</li>
+                <li>Проверяется подпись базы чужим/подменённым ключом — пакет отклоняется.</li>
+            </ul>
+            <h3>Приложение</h3>
+            <ul>
+                <li>Проверки границ пути переведены с префиксного сравнения (<code>StartsWith</code>) на безопасный алгоритм — соседние каталоги (App vs App2/Alex vs Alex2) больше не проходят как «свои».</li>
+                <li>Принудительное удаление программ: сначала штатный тихий деинсталлятор, принудительное снятие процессов — только по таймауту; папка установки удаляется только при подтверждённом владении; папки данных по имени — только после отдельного подтверждения со списком.</li>
+                <li>Установка рантайм-компонентов: добавлены проверки ожидаемого имени файла, продукта и (опционально) SHA256-allowlist установщика, fail-closed.</li>
+                <li>История операций пишется через контролируемую фоновую очередь с дозаписью при выходе; логика старта переведена на Task-based.</li>
+            </ul>
+            <h3>UX и доступность</h3>
+            <ul>
+                <li>Всем переключателям без текста заданы имена для экранных дикторов (Accessibility).</li>
+                <li>Повышен контраст вторичного/третичного текста в светлой и тёмной темах до ≥4.5:1 — читаемость без потери визуальной иерархии.</li>
+                <li>Активатор выведен из production-сборки (UI, команда и копирование в output удалены).</li>
+            </ul>
+            <h3>Инфраструктура</h3>
+            <ul>
+                <li>Приватный ключ подписи и пароль PFX удалены из исходников (пароль — только через переменную окружения).</li>
+                <li>Репозиторий очищен от сгенерированных артефактов; сборка воспроизводится с нуля, бинарники подписываются и автоматически проверяются; к релизу формируется манифест SHA256SUMS.</li>
+                <li>Тесты: <strong>347/347</strong>, включая 20+ security-регрессионных; отсутствие собранного ScannerCore в CI — ошибка, а не тихий пропуск.</li>
+            </ul>
+        </div>
+    </aside>
+
     <p class="legal">SCU не имеет связи и не одобрялось ни одной компанией.</p>
+
+    <script>
+        // Панель «Версии»: список сборок и вложенная панель с описанием изменений.
+        (function () {
+            var toggle = document.getElementById('versionsToggle');
+            var overlay = document.getElementById('versionsOverlay');
+            var versions = document.getElementById('versionsPanel');
+            var changelog = document.getElementById('changelogPanel');
+            if (!toggle || !versions || !changelog) return;
+
+            function open(el) { el.classList.add('open'); el.setAttribute('aria-hidden', 'false'); }
+            function close(el) { el.classList.remove('open'); el.setAttribute('aria-hidden', 'true'); }
+
+            function closeAll() {
+                close(changelog);
+                close(versions);
+                close(overlay);
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+
+            toggle.addEventListener('click', function () {
+                if (versions.classList.contains('open')) {
+                    closeAll();
+                } else {
+                    open(overlay);
+                    open(versions);
+                    toggle.setAttribute('aria-expanded', 'true');
+                }
+            });
+
+            overlay.addEventListener('click', closeAll);
+            document.getElementById('versionsClose').addEventListener('click', closeAll);
+            document.getElementById('changelogClose').addEventListener('click', closeAll);
+            document.getElementById('changelogBack').addEventListener('click', function () { close(changelog); });
+
+            Array.prototype.forEach.call(document.querySelectorAll('.version-item'), function (item) {
+                item.addEventListener('click', function () {
+                    open(changelog);
+                    changelog.scrollTop = 0;
+                });
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key !== 'Escape') return;
+                if (changelog.classList.contains('open')) close(changelog);
+                else if (versions.classList.contains('open')) closeAll();
+            });
+        })();
+    </script>
 
     <script>
         // Счётчики посещений и загрузок: дедупликация по SHA256 на сервере (/api/track).
