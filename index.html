@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,9 +20,10 @@
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
-        img { display: block; }
+        img { display: block; height: auto; }
         a { color: inherit; text-decoration: none; }
         ::selection { background: #0a84ff; color: #fff; }
+        :focus-visible { outline: 2px solid #0255fc; outline-offset: 2px; }
 
         /* ---------- NAV ---------- */
         .nav {
@@ -229,6 +230,8 @@
             padding: 0 20px 70px;
         }
         .support img { width: 200px; height: 200px; }
+        .support .support-qr img { transition: transform .15s ease; }
+        .support .support-qr:hover img { transform: scale(1.03); }
         .support a {
             font-size: 15px;
             line-height: 20px;
@@ -283,16 +286,23 @@
             height: 100%;
             background: #fff;
             overflow-y: auto;
-            transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+            /* visibility отключает отрисовку и перехват кликов у спрятанной панели;
+               задержка, чтобы панель не погасла во время слайда */
+            visibility: hidden;
+            transition: transform .35s cubic-bezier(.4, 0, .2, 1), visibility 0s linear .35s;
         }
-        .side-panel.open { transform: translateX(0); }
+        .side-panel.open {
+            transform: translateX(0);
+            visibility: visible;
+            transition: transform .35s cubic-bezier(.4, 0, .2, 1), visibility 0s;
+        }
 
         .versions-panel {
             left: 0;
             width: var(--panel-w);
             padding: 30px 26px;
             box-shadow: 12px 0 40px rgba(0, 0, 0, .12);
-            transform: translateX(-103%);
+            transform: translateX(-104%);
             z-index: 60;
         }
         .changelog-panel {
@@ -300,7 +310,8 @@
             width: min(420px, calc(100vw - var(--panel-w)));
             padding: 30px 28px;
             box-shadow: 12px 0 40px rgba(0, 0, 0, .12);
-            transform: translateX(-104%);
+            /* в скрытом состоянии полностью за левым краем экрана */
+            transform: translateX(calc(-100% - 340px));
             z-index: 55;
         }
 
@@ -448,7 +459,11 @@
             from { transform: translate3d(0, 0, 0); }
             to   { transform: translate3d(-50%, 0, 0); }
         }
-    
+
+        @media (prefers-reduced-motion: reduce) {
+            .gallery-track { animation: none; }
+        }
+
     </style>
 </head>
 <body>
@@ -463,6 +478,8 @@
         </div>
     </nav>
 
+    <main>
+
     <header class="hero">
         <h1>Примени настройки<br>в один <span class="click-morph" id="clickMorph"><span class="morph-word">клик</span><span class="morph-switch" aria-hidden="true"><span class="morph-knob"></span></span></span></h1>
         <p class="sub">Множество скриптов в одном файле</p>
@@ -473,19 +490,19 @@
         </div>
 
         <div class="hero-image">
-            <img src="static/compositor/hero.png" alt="Интерфейс приложения SCU">
+            <img src="static/compositor/hero.webp" width="2936" height="1443" fetchpriority="high" alt="Интерфейс приложения SCU">
         </div>
     </header>
 
     <section class="purpose">
         <div class="gallery" aria-hidden="true">
             <div class="gallery-track">
-                <img src="static/scuapp/screen-install.png" alt="">
-                <img src="static/scuapp/screen-cleanup.png" alt="">
-                <img src="static/scuapp/screen-power.png" alt="">
-                <img class="dup" src="static/scuapp/screen-install.png" alt="">
-                <img class="dup" src="static/scuapp/screen-cleanup.png" alt="">
-                <img class="dup" src="static/scuapp/screen-power.png" alt="">
+                <img src="static/scuapp/screen-install.png" width="1920" height="1032" loading="lazy" decoding="async" alt="">
+                <img src="static/scuapp/screen-cleanup.png" width="1920" height="1032" loading="lazy" decoding="async" alt="">
+                <img src="static/scuapp/screen-power.png" width="1920" height="1032" loading="lazy" decoding="async" alt="">
+                <img class="dup" src="static/scuapp/screen-install.png" width="1920" height="1032" loading="lazy" decoding="async" alt="">
+                <img class="dup" src="static/scuapp/screen-cleanup.png" width="1920" height="1032" loading="lazy" decoding="async" alt="">
+                <img class="dup" src="static/scuapp/screen-power.png" width="1920" height="1032" loading="lazy" decoding="async" alt="">
             </div>
         </div>
 
@@ -499,8 +516,8 @@
             </div>
 
             <div class="cards" aria-hidden="true">
-                <img src="static/scuapp/card-notification.png" alt="">
-                <img src="static/scuapp/card-settings.png" alt="">
+                <img src="static/scuapp/card-notification.png" width="748" height="261" loading="lazy" decoding="async" alt="">
+                <img src="static/scuapp/card-settings.png" width="418" height="255" loading="lazy" decoding="async" alt="">
             </div>
 
             <ul class="features">
@@ -520,8 +537,7 @@
                 <li>Ввод, браузер и игры</li>
                 <li>Поиск и целостность</li>
                 <li>Безопасность (UAC)</li>
-                <li>Антивирус</li>
-                <li>Активация Windows и Office</li>
+                <li>Сканер</li>
                 <li>Задачи планировщика</li>
                 <li>Обновления Windows</li>
                 <li>История</li>
@@ -530,9 +546,11 @@
         </div>
     </section>
 
+    </main>
+
     <footer class="footer">
         <div class="footer-brand">
-            <img src="static/compositor/app-icon.png" alt="иконка SCU">
+            <img src="static/compositor/app-icon.png" width="256" height="256" loading="lazy" decoding="async" alt="иконка SCU">
             <span>SCU</span>
         </div>
         <div class="buttons">
@@ -542,90 +560,134 @@
     </footer>
 
     <div class="support">
-        <img src="static/compositor/qr-ozon.png" alt="QR-код для поддержки проекта">
-        <a href="https://finance.ozon.ru/apps/sbp/ozonbankpay/01a0dd12-3984-7158-aed9-fe1233abfb55" target="_blank" rel="noopener">Поддержи проект (ссылка)</a>
+        <a class="support-qr" href="https://finance.ozon.ru/apps/sbp/ozonbankpay/01a0dd12-3984-7158-aed9-fe1233abfb55" target="_blank" rel="noopener" aria-label="Поддержи проект">
+            <img src="static/compositor/qr-ozon.png" width="600" height="600" loading="lazy" decoding="async" alt="QR-код для поддержки проекта">
+        </a>
+        <a href="https://finance.ozon.ru/apps/sbp/ozonbankpay/01a0dd12-3984-7158-aed9-fe1233abfb55" target="_blank" rel="noopener">Поддержи проект! (ссылка)</a>
     </div>
 
     <div class="versions-overlay" id="versionsOverlay"></div>
 
-    <aside class="side-panel versions-panel" id="versionsPanel" aria-hidden="true">
+    <aside class="side-panel versions-panel" id="versionsPanel" tabindex="-1" aria-hidden="true">
         <div class="panel-head">
             <div class="panel-titles">
                 <p class="panel-title">Версии</p>
             </div>
             <button class="panel-close" id="versionsClose" aria-label="Закрыть">×</button>
         </div>
-        <button class="version-item" type="button">
-            <span class="version-num">Версия 3.1.9</span>
-            <span class="version-date">Релиз 26.09.26</span>
-        </button>
+        <div id="versionsList"></div>
     </aside>
 
-    <aside class="side-panel changelog-panel" id="changelogPanel" aria-hidden="true">
+    <aside class="side-panel changelog-panel" id="changelogPanel" tabindex="-1" aria-hidden="true">
         <div class="panel-head">
             <button class="panel-back" id="changelogBack" aria-label="Назад к списку версий">←</button>
-            <div class="panel-titles">
-                <p class="panel-title">Версия 3.1.9</p>
-                <p class="panel-sub">Релиз 26.09.26</p>
-            </div>
+            <div class="panel-titles" id="changelogTitles"></div>
             <button class="panel-close" id="changelogClose" aria-label="Закрыть">×</button>
         </div>
-        <div class="changelog-body">
-            <h3>Безопасность сканера</h3>
-            <ul>
-                <li>Пересмотрен порядок анализа: lookup по подписанной базе IOC выполняется <strong>всегда до</strong> локального кэша — кэш больше не может скрыть известный malware.</li>
-                <li>Архивы (ZIP, включая вложенные) не кэшируются как «чистые»: содержимое сканируется при каждой встрече контейнера.</li>
-                <li>Кэш вердиктов версионируется по движку, версии базы и профилю сканирования (scripts/archives/persistence/processes/maxFileSize/эвристики) — смена любого параметра полностью сбрасывает кэш; повреждённые записи кэша игнорируются.</li>
-                <li>Persistence-цель-архив проходит полный archive-скан, вердикт содержимого учитывается в детекте автозапуска.</li>
-                <li>Добавлены тесты отмены и повреждённой базы: сканер корректно прерывается и не падает на мусорных данных.</li>
-            </ul>
-            <h3>База и обновления</h3>
-            <ul>
-                <li>Строгая валидация пакета базы: каждая строка <code>hashes.txt</code> проверяется (64 hex, вердикт, имя, UTF-8, без дублей); одна испорченная строка отклоняет всю базу.</li>
-                <li>Загрузка обновлений без автопереходов: redirect'ы обрабатываются вручную — только HTTPS, тот же хост, без понижения схемы, максимум 3 перехода.</li>
-                <li>Проверяется подпись базы чужим/подменённым ключом — пакет отклоняется.</li>
-            </ul>
-            <h3>Приложение</h3>
-            <ul>
-                <li>Проверки границ пути переведены с префиксного сравнения (<code>StartsWith</code>) на безопасный алгоритм — соседние каталоги (App vs App2/Alex vs Alex2) больше не проходят как «свои».</li>
-                <li>Принудительное удаление программ: сначала штатный тихий деинсталлятор, принудительное снятие процессов — только по таймауту; папка установки удаляется только при подтверждённом владении; папки данных по имени — только после отдельного подтверждения со списком.</li>
-                <li>Установка рантайм-компонентов: добавлены проверки ожидаемого имени файла, продукта и (опционально) SHA256-allowlist установщика, fail-closed.</li>
-                <li>История операций пишется через контролируемую фоновую очередь с дозаписью при выходе; логика старта переведена на Task-based.</li>
-            </ul>
-            <h3>UX и доступность</h3>
-            <ul>
-                <li>Всем переключателям без текста заданы имена для экранных дикторов (Accessibility).</li>
-                <li>Повышен контраст вторичного/третичного текста в светлой и тёмной темах до ≥4.5:1 — читаемость без потери визуальной иерархии.</li>
-                <li>Активатор выведен из production-сборки (UI, команда и копирование в output удалены).</li>
-            </ul>
-            <h3>Инфраструктура</h3>
-            <ul>
-                <li>Приватный ключ подписи и пароль PFX удалены из исходников (пароль — только через переменную окружения).</li>
-                <li>Репозиторий очищен от сгенерированных артефактов; сборка воспроизводится с нуля, бинарники подписываются и автоматически проверяются; к релизу формируется манифест SHA256SUMS.</li>
-                <li>Тесты: <strong>347/347</strong>, включая 20+ security-регрессионных; отсутствие собранного ScannerCore в CI — ошибка, а не тихий пропуск.</li>
-            </ul>
-        </div>
+        <div class="changelog-body" id="changelogBody"></div>
     </aside>
 
-    <p class="legal">SCU не имеет связи и не одобрялось ни одной компанией.</p>
+    <p class="legal">SCU не связан с другими компаниями и не одобрен ни одной из них.</p>
 
     <script>
         // Панель «Версии»: список сборок и вложенная панель с описанием изменений.
+        // Новая версия = новая запись в массиве VERSIONS (первая в списке — верхняя в панели).
+        var VERSIONS = [
+            {
+                num: "3.1.9",
+                date: "26.09.26",
+                sections: [
+                    {
+                        title: "Безопасность сканера",
+                        items: [
+                            "Пересмотрен порядок анализа: lookup по подписанной базе IOC выполняется <strong>всегда до</strong> локального кэша — кэш больше не может скрыть известный malware.",
+                            "Архивы (ZIP, включая вложенные) не кэшируются как «чистые»: содержимое сканируется при каждой встрече контейнера.",
+                            "Кэш вердиктов версионируется по движку, версии базы и профилю сканирования (scripts/archives/persistence/processes/maxFileSize/эвристики) — смена любого параметра полностью сбрасывает кэш; повреждённые записи кэша игнорируются.",
+                            "Persistence-цель-архив проходит полный archive-скан, вердикт содержимого учитывается в детекте автозапуска.",
+                            "Добавлены тесты отмены и повреждённой базы: сканер корректно прерывается и не падает на мусорных данных."
+                        ]
+                    },
+                    {
+                        title: "База и обновления",
+                        items: [
+                            "Строгая валидация пакета базы: каждая строка <code>hashes.txt</code> проверяется (64 hex, вердикт, имя, UTF-8, без дублей); одна испорченная строка отклоняет всю базу.",
+                            "Загрузка обновлений без автопереходов: redirect'ы обрабатываются вручную — только HTTPS, тот же хост, без понижения схемы, максимум 3 перехода.",
+                            "Проверяется подпись базы чужим/подменённым ключом — пакет отклоняется."
+                        ]
+                    },
+                    {
+                        title: "Приложение",
+                        items: [
+                            "Проверки границ пути переведены с префиксного сравнения (<code>StartsWith</code>) на безопасный алгоритм — соседние каталоги (App vs App2/Alex vs Alex2) больше не проходят как «свои».",
+                            "Принудительное удаление программ: сначала штатный тихий деинсталлятор, принудительное снятие процессов — только по таймауту; папка установки удаляется только при подтверждённом владении; папки данных по имени — только после отдельного подтверждения со списком.",
+                            "Установка рантайм-компонентов: добавлены проверки ожидаемого имени файла, продукта и (опционально) SHA256-allowlist установщика, fail-closed.",
+                            "История операций пишется через контролируемую фоновую очередь с дозаписью при выходе; логика старта переведена на Task-based."
+                        ]
+                    },
+                    {
+                        title: "UX и доступность",
+                        items: [
+                            "Всем переключателям без текста заданы имена для экранных дикторов (Accessibility).",
+                            "Повышен контраст вторичного/третичного текста в светлой и тёмной темах до ≥4.5:1 — читаемость без потери визуальной иерархии.",
+                            "Активатор выведен из production-сборки (UI, команда и копирование в output удалены)."
+                        ]
+                    },
+                    {
+                        title: "Инфраструктура",
+                        items: [
+                            "Приватный ключ подписи и пароль PFX удалены из исходников (пароль — только через переменную окружения).",
+                            "Репозиторий очищен от сгенерированных артефактов; сборка воспроизводится с нуля, бинарники подписываются и автоматически проверяются; к релизу формируется манифест SHA256SUMS.",
+                            "Тесты: <strong>347/347</strong>, включая 20+ security-регрессионных; отсутствие собранного ScannerCore в CI — ошибка, а не тихий пропуск."
+                        ]
+                    }
+                ]
+            }
+        ];
+
         (function () {
             var toggle = document.getElementById('versionsToggle');
             var overlay = document.getElementById('versionsOverlay');
             var versions = document.getElementById('versionsPanel');
             var changelog = document.getElementById('changelogPanel');
-            if (!toggle || !versions || !changelog) return;
+            var versionsList = document.getElementById('versionsList');
+            var changelogTitles = document.getElementById('changelogTitles');
+            var changelogBody = document.getElementById('changelogBody');
+            if (!toggle || !versions || !changelog || !versionsList) return;
 
             function open(el) { el.classList.add('open'); el.setAttribute('aria-hidden', 'false'); }
             function close(el) { el.classList.remove('open'); el.setAttribute('aria-hidden', 'true'); }
 
-            function closeAll() {
+            function openChangelog(v) {
+                if (changelogTitles) {
+                    changelogTitles.innerHTML = '<p class="panel-title">Версия ' + v.num + '</p>' +
+                        '<p class="panel-sub">Релиз ' + v.date + '</p>';
+                }
+                changelogBody.innerHTML = v.sections.map(function (s) {
+                    return '<h3>' + s.title + '</h3><ul>' +
+                        s.items.map(function (item) { return '<li>' + item + '</li>'; }).join('') +
+                        '</ul>';
+                }).join('');
+                open(changelog);
+                changelog.scrollTop = 0;
+                changelog.focus({ preventScroll: true });
+            }
+
+            VERSIONS.forEach(function (v) {
+                var item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'version-item';
+                item.innerHTML = '<span class="version-num">Версия ' + v.num + '</span>' +
+                    '<span class="version-date">Релиз ' + v.date + '</span>';
+                item.addEventListener('click', function () { openChangelog(v); });
+                versionsList.appendChild(item);
+            });
+
+            function closeAll(refocus) {
                 close(changelog);
                 close(versions);
                 close(overlay);
                 toggle.setAttribute('aria-expanded', 'false');
+                if (refocus !== false) toggle.focus({ preventScroll: true });
             }
 
             toggle.addEventListener('click', function () {
@@ -635,25 +697,28 @@
                     open(overlay);
                     open(versions);
                     toggle.setAttribute('aria-expanded', 'true');
+                    versions.focus({ preventScroll: true });
                 }
             });
 
-            overlay.addEventListener('click', closeAll);
-            document.getElementById('versionsClose').addEventListener('click', closeAll);
-            document.getElementById('changelogClose').addEventListener('click', closeAll);
-            document.getElementById('changelogBack').addEventListener('click', function () { close(changelog); });
-
-            Array.prototype.forEach.call(document.querySelectorAll('.version-item'), function (item) {
-                item.addEventListener('click', function () {
-                    open(changelog);
-                    changelog.scrollTop = 0;
-                });
+            overlay.addEventListener('click', function () { closeAll(); });
+            document.getElementById('versionsClose').addEventListener('click', function () { closeAll(); });
+            document.getElementById('changelogClose').addEventListener('click', function () { closeAll(); });
+            document.getElementById('changelogBack').addEventListener('click', function () {
+                close(changelog);
+                var firstItem = versionsList.querySelector('.version-item');
+                if (firstItem) firstItem.focus({ preventScroll: true });
             });
 
             document.addEventListener('keydown', function (e) {
                 if (e.key !== 'Escape') return;
-                if (changelog.classList.contains('open')) close(changelog);
-                else if (versions.classList.contains('open')) closeAll();
+                if (changelog.classList.contains('open')) {
+                    close(changelog);
+                    var firstItem = versionsList.querySelector('.version-item');
+                    if (firstItem) firstItem.focus({ preventScroll: true });
+                } else if (versions.classList.contains('open')) {
+                    closeAll();
+                }
             });
         })();
     </script>
@@ -688,15 +753,6 @@
             });
         })();
 
-        // Google Analytics: count clicks on all Download and Source buttons
-        document.querySelectorAll('.btn-download, .btn-source').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                if (typeof gtag !== 'function') return;
-                var name = btn.classList.contains('btn-download') ? 'download_click' : 'source_click';
-                gtag('event', name, { transport_type: 'beacon' });
-            });
-        });
-
         // «клик» ↔ switch morph: word turns into a toggle that cycles
         // green → purple → light blue → blue, then turns back into the word.
         (function () {
@@ -729,8 +785,22 @@
                 await wait(MORPH_MS + WORD_PAUSE);
             }
 
+            // не крутим анимацию в фоновой вкладке
+            function waitVisible() {
+                if (!document.hidden) return Promise.resolve();
+                return new Promise(function (resolve) {
+                    document.addEventListener('visibilitychange', function onVis() {
+                        document.removeEventListener('visibilitychange', onVis);
+                        resolve();
+                    }, { once: true });
+                });
+            }
+
             (async function loop() {
-                for (;;) { await cycle(); }
+                for (;;) {
+                    await waitVisible();
+                    await cycle();
+                }
             })();
         })();
     </script>

@@ -29,11 +29,12 @@ async function markUser(prefix, hash) {
     const path = prefix + hash;
     try {
         await head(path);
-        return; // уже считали этого пользователя
+        return false; // уже считали этого пользователя
     } catch (e) {
         // маркера нет — создаём; повторная запись того же пути идемпотентна
     }
     await put(path, String(Date.now()), { access: 'private', addRandomSuffix: false });
+    return true;
 }
 
 async function countPrefix(prefix) {
@@ -47,18 +48,37 @@ async function countPrefix(prefix) {
     return count;
 }
 
+// Полный подсчёт маркеров через list — дорогая операция (один вызов API на
+// каждую тысячу маркеров), поэтому результат кэшируется на короткое время.
+// Кэш живёт в контексте переиспользуемого serverless-инстанса.
+const CACHE_TTL_MS = 30000;
+const cache = { visits: null, downloads: null, at: 0 };
+
+async function counts(force) {
+    if (!force && cache.visits !== null && Date.now() - cache.at < CACHE_TTL_MS) {
+        return { visits: cache.visits, downloads: cache.downloads };
+    }
+    const [visits, downloads] = await Promise.all([
+        countPrefix(PREFIX_VISIT),
+        countPrefix(PREFIX_DOWNLOAD),
+    ]);
+    cache.visits = visits;
+    cache.downloads = downloads;
+    cache.at = Date.now();
+    return { visits, downloads };
+}
+
 module.exports = async (req, res) => {
     try {
         const type = req.query.type === 'download' ? 'download' : 'visit';
         const hash = userHash(req);
-        await markUser(type === 'visit' ? PREFIX_VISIT : PREFIX_DOWNLOAD, hash);
+        const created = await markUser(type === 'visit' ? PREFIX_VISIT : PREFIX_DOWNLOAD, hash);
 
-        const [visits, downloads] = await Promise.all([
-            countPrefix(PREFIX_VISIT),
-            countPrefix(PREFIX_DOWNLOAD),
-        ]);
+        // если маркер только что создан — пересчитываем мимо кэша, чтобы
+        // этот пользователь был учтён в ответе
+        const stats = await counts(!created);
         res.setHeader('Cache-Control', 'no-store');
-        res.status(200).json({ visits, downloads });
+        res.status(200).json(stats);
     } catch (e) {
         res.status(500).json({ error: 'track_failed' });
     }
