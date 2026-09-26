@@ -220,6 +220,23 @@
         .footer-brand img { width: 79px; height: 79px; }
         .footer-brand span { font-size: 30px; line-height: 36px; font-weight: 500; letter-spacing: -0.01em; }
 
+        /* ---------- ПОДДЕРЖКА ---------- */
+        .support {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 0 20px 70px;
+        }
+        .support img { width: 200px; height: 200px; }
+        .support a {
+            font-size: 15px;
+            line-height: 20px;
+            color: #444444;
+            transition: color .15s ease;
+        }
+        .support a:hover { color: #0255fc; }
+
         .legal {
             margin: 0;
             padding: 10px 20px 10px;
@@ -403,6 +420,11 @@
             <a class="btn btn-source" href="https://drive.google.com/drive/folders/1Usa65sfPznK6GNPHZIR99-OaJWV7etk1?usp=sharing" target="_blank" rel="noopener"><img src="static/compositor/gdrive-logo.svg" alt="">Исходный код</a>
         </div>
     </footer>
+
+    <div class="support">
+        <img src="static/compositor/qr-ozon.png" alt="QR-код для поддержки проекта">
+        <a href="https://finance.ozon.ru/apps/sbp/ozonbankpay/01a0dd12-3984-7158-aed9-fe1233abfb55" target="_blank" rel="noopener">Поддержи проект (ссылка)</a>
+    </div>
 
     <p class="legal">SCU не имеет связи и не одобрялось ни одной компанией.</p>
 
