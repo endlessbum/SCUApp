@@ -34,6 +34,9 @@
             line-height: 20px;
         }
         .nav-date { color: #b5b5b5; }
+        .nav-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+        .nav-stat { color: #b5b5b5; opacity: 0; transition: opacity .3s ease; }
+        .nav-stat.visible { opacity: 1; }
 
         /* ---------- HERO ---------- */
         .hero { text-align: center; padding-top: 112px; }
@@ -236,8 +239,8 @@
 
         /* ---------- MOBILE ---------- */
         @media (max-width: 768px) {
-            .nav { padding: 20px 20px; line-height: 38px; }
-            .nav-date { color: #ccc; }
+            .nav { padding: 20px 20px; line-height: 22px; }
+            .nav-date, .nav-stat { color: #ccc; }
 
             .hero { padding-top: 60px; display: flex; flex-direction: column; padding-bottom: 20px; }
             .hero .buttons { order: 3; }
@@ -316,7 +319,11 @@
 
 
     <nav class="nav">
-        <span class="nav-date">Последнее обновление: 25 сентября 2026</span>
+        <div class="nav-meta">
+            <span class="nav-date">Последнее обновление: 25 сентября 2026</span>
+            <span class="nav-stat" id="statVisits">Посещений: —</span>
+            <span class="nav-stat" id="statDownloads">Загрузок: —</span>
+        </div>
     </nav>
 
     <header class="hero">
@@ -400,6 +407,35 @@
     <p class="legal">SCU не имеет связи и не одобрялось ни одной компанией.</p>
 
     <script>
+        // Счётчики посещений и загрузок: дедупликация по SHA256 на сервере (/api/track).
+        (function () {
+            var elVisits = document.getElementById('statVisits');
+            var elDownloads = document.getElementById('statDownloads');
+
+            function render(data) {
+                if (!data || typeof data.visits !== 'number') return;
+                elVisits.textContent = 'Посещений: ' + data.visits.toLocaleString('ru-RU');
+                elDownloads.textContent = 'Загрузок: ' + data.downloads.toLocaleString('ru-RU');
+                elVisits.classList.add('visible');
+                elDownloads.classList.add('visible');
+            }
+
+            fetch('/api/track?type=visit', { headers: { 'Accept': 'application/json' } })
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(render)
+                .catch(function () {});
+
+            // keepalive, чтобы запрос успел уйти до перехода на Google Drive
+            document.querySelectorAll('.btn-download').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    fetch('/api/track?type=download', { method: 'POST', keepalive: true })
+                        .then(function (r) { return r.ok ? r.json() : null; })
+                        .then(render)
+                        .catch(function () {});
+                });
+            });
+        })();
+
         // Google Analytics: count clicks on all Download and Source buttons
         document.querySelectorAll('.btn-download, .btn-source').forEach(function (btn) {
             btn.addEventListener('click', function () {
